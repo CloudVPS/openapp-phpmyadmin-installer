@@ -1,0 +1,55 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH openapp-phpmyadmin-passwd 1 "June 27, 2011"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+openapp-phpmyadmin-passwd \- (re)set the mysql/phpmyadmin admin password
+.SH SYNOPSIS
+.B openapp-phpmyadmin-passwd [stdin]
+.SH DESCRIPTION
+This manual page documents briefly the
+.B openapp-phpmyadmin-passwd
+command.
+.PP
+.\" TeX users may be more comfortable with the \fB<whatever>\fP and
+.\" \fI<whatever>\fP escape sequences to invode bold face and italics,
+.\" respectively.
+\fBopenapp-phpmyadmin-passwd\fP is a program that (re)sets the admin password for OpenApp
+.br
+mysql installs. It creates a password for you and echoes it on STDOUT. If you
+.br
+do not want a password to be created for you, add the argument 'stdin'.
+.br
+The generated (or entered password) is used to set the password for the user
+.br
+openapp@'localhost' in Mysql, and to configure Phpmyadmin and Lighttpd. This
+.br
+will ensure that Phpmyadmin can login without prompting for a password
+.br
+\fBand\fP that Lighttpd will ask for a password to login. Your username for
+.br
+Phpmyadmin is 'openapp'.
+.br
+.SH OPTIONS
+This program has one optional argument:
+.br
+ - stdin: Will ask you to enter a password, which will be used to update the mysql password
+.SH AUTHOR
+openapp-phpmyadmin-passwd was written by Mark Schouten.
+.PP
+This manual page was written by Mark Schouten <mark@tuxis.nl>, for the OpenApp
+.br
+project (and may be used by others).

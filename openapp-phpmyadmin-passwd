@@ -1,0 +1,119 @@
+#!/bin/bash
+
+CONFDIR=/etc/openapp-phpmyadmin
+
+fatal() {
+    echo "ERROR: $1"
+    exit 1
+}
+
+[ -z $1 ] && PASSWORD=`pwgen -s 10`
+[ "$1" = "stdin" ] && read -p "Please enter your password: " PASSWORD
+
+MYSQL=/usr/bin/mysql
+OPTS="--defaults-file=/etc/mysql/debian.cnf mysql -B -N -e"
+
+QUERY="${MYSQL} ${OPTS}"
+[ $UID -eq 0 ] || fatal "You need to be root to run this"
+[ -z "$PASSWORD" ] && fatal "We don't have a password. Is pwgen installed?"
+
+${QUERY} "GRANT ALL PRIVILEGES ON *.* TO openapp@'localhost' IDENTIFIED BY '${PASSWORD}';" || fatal "Unable to set Mysql password"
+${QUERY} "FLUSH PRIVILEGES;"
+
+mkdir -p ${CONFDIR}/
+
+##
+# Configure phpmyadmin
+cat <<EOB > ${CONFDIR}/phpmyadmin.conf
+<?php
+\$i=0;
+\$i++;
+\$cfg['Servers'][\$i]['user']          = 'openapp';
+\$cfg['Servers'][\$i]['password']      = '${PASSWORD}'; // use here your password
+\$cfg['Servers'][\$i]['auth_type']     = 'config';
+?>
+EOB
+
+##
+# Configure Lighttpd
+cat <<EOB > ${CONFDIR}/lighttpd.conf
+alias.url = ( "/phpmyadmin/" => "/usr/share/phpmyadmin/" )
+auth.backend = "plain"
+auth.backend.plain.userfile = "${CONFDIR}/httpd.passwd"
+auth.require = ( "/phpmyadmin" =>
+(
+"method" => "basic",
+"realm" => "Password protected area",
+"require" => "user=openapp"
+)
+)
+EOB
+
+##
+# Configure Apache2
+cat <<EOB > ${CONFDIR}/apache2.conf
+Alias /phpmyadmin /usr/share/phpmyadmin
+
+<Directory /usr/share/phpmyadmin>
+        Options FollowSymLinks
+        DirectoryIndex index.php
+
+        <IfModule mod_php5.c>
+                AddType application/x-httpd-php .php
+
+                php_flag magic_quotes_gpc Off
+                php_flag track_vars On
+                php_flag register_globals Off
+                php_value include_path .
+        </IfModule>
+
+</Directory>
+
+# Authorize for setup
+<Directory /usr/share/phpmyadmin>
+    AuthType Basic
+    AuthName "phpMyAdmin Setup"
+    AuthUserFile /etc/openapp-phpmyadmin/httpd.passwd
+    Require user openapp
+</Directory>
+
+# Disallow web access to directories that don't need it
+<Directory /usr/share/phpmyadmin/libraries>
+    Order Deny,Allow
+    Deny from All
+</Directory>
+<Directory /usr/share/phpmyadmin/setup/lib>
+    Order Deny,Allow
+    Deny from All
+</Directory>
+EOB
+
+cat <<EOB > ${CONFDIR}/httpd.passwd
+openapp:${PASSWORD}
+EOB
+
+chmod 640 ${CONFDIR}/*
+chown root:www-data ${CONFDIR}/*
+
+DO_RESTART=no
+
+if [ -x /usr/sbin/lighttpd ]; then
+	if [ ! -L /etc/lighttpd/conf-enabled/phpmyadmin.conf ]; then
+		ln -s ${CONFDIR}/lighttpd.conf /etc/lighttpd/conf-enabled/phpmyadmin.conf
+		DO_RESTART=yes
+	fi
+elif [ -x /usr/sbin/apache2 ]; then
+	if [ ! -L /etc/apache2/conf.d/phpmyadmin.conf ]; then
+		ln -s ${CONFDIR}/apache2.conf /etc/apache2/conf.d/phpmyadmin.conf
+		DO_RESTART=yes
+	fi
+fi
+
+[ -L /usr/share/phpmyadmin/config.inc.php ] || ln -s ${CONFDIR}/phpmyadmin.conf /usr/share/phpmyadmin/config.inc.php
+
+if [ "${DO_RESTART}" = "yes" ]; then
+	[ -x /usr/sbin/lighttpd ] && /etc/init.d/lighttpd restart
+	[ -x /usr/sbin/apache2 ]  && /etc/init.d/apache2 restart
+fi
+
+echo "${PASSWORD} is your new password"

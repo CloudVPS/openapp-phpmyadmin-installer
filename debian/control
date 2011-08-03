@@ -1,0 +1,12 @@
+Source: openapp-phpmyadmin-installer
+Section: database
+Priority: extra
+Maintainer: Mark Schouten <mark@tuxis.nl>
+Build-Depends: debhelper
+Standards-Version: 3.9.1
+Homepage: http://www.openpanel.com/openapp/
+
+Package: openapp-phpmyadmin-installer
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, apache2 | lighttpd, php5-mysql, libapache2-mod-php5 | php5-cgi
+Description: This will install your PHPMyAdmin for your OpenApp Appliance!
