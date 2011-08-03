@@ -88,6 +88,12 @@ case "$1" in
 		echo "Upgrade detected. Running upgrade"
 		upgrade_phpmyadmin $2
 	fi
+	echo "Creating symlinks to make nice backups of your OpenApp Appliance"
+	SCRIPTS="openapp-phpmyadmin-installer"
+	for SCRIPT in ${SCRIPTS}; do
+		openapp-backup-enmod ${SCRIPT}
+	done
+
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure|triggered)
