@@ -73,7 +73,7 @@ Alias /phpmyadmin /usr/share/phpmyadmin
 <Directory /usr/share/phpmyadmin>
     AuthType Basic
     AuthName "phpMyAdmin Setup"
-    AuthUserFile /etc/openapp-phpmyadmin/httpd.passwd
+    AuthUserFile /etc/openapp-phpmyadmin/htpasswd
     Require user openapp
 </Directory>
 
@@ -91,6 +91,8 @@ EOB
 cat <<EOB > ${CONFDIR}/httpd.passwd
 openapp:${PASSWORD}
 EOB
+
+htpasswd -c ${CONFDIR}/htpasswd -b openapp ${PASSWORD} > /dev/null
 
 chmod 640 ${CONFDIR}/*
 chown root:www-data ${CONFDIR}/*

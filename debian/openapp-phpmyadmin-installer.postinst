@@ -70,6 +70,9 @@ install_phpmyadmin() {
 		echo "Enabling auth and fastcgi for Lighttpd"
 		lighttpd-enable-mod auth fastcgi
 		run_openapp_passwd
+	elif [ -x /usr/sbin/apache2 ]; then
+		echo "Enabling authentication on /phpmyadmin"
+		run_openapp_passwd
 	fi
 }
 
