@@ -37,7 +37,7 @@ EOB
 ##
 # Configure Lighttpd
 cat <<EOB > ${CONFDIR}/lighttpd.conf
-alias.url = ( "/phpmyadmin/" => "/usr/share/phpmyadmin/" )
+alias.url = ( "/phpmyadmin" => "/usr/share/phpmyadmin/" )
 auth.backend = "plain"
 auth.backend.plain.userfile = "${CONFDIR}/httpd.passwd"
 auth.require = ( "/phpmyadmin" =>
