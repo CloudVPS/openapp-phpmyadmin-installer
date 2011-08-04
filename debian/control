@@ -8,5 +8,5 @@ Homepage: http://www.openpanel.com/openapp/
 
 Package: openapp-phpmyadmin-installer
 Architecture: any
-Pre-Depends: openapp-backup, httpd
+Pre-Depends: openapp-backup, openapp-phpmyadmin-user
 Description: This will install your PHPMyAdmin for your OpenApp Appliance!
