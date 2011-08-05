@@ -24,6 +24,8 @@ case "$1" in
 		for SCRIPT in ${SCRIPTS}; do
 			openapp-backup-dismod ${SCRIPT}
 		done
+
+		rm -rf /usr/share/phpmyadmin/
     ;;
 
     upgrade|failed-upgrade)
