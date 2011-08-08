@@ -92,7 +92,7 @@ cat <<EOB > ${CONFDIR}/httpd.passwd
 openapp:${PASSWORD}
 EOB
 
-htpasswd -bc ${CONFDIR}/htpasswd openapp ${PASSWORD} > /dev/null
+[ -x /usr/bin/htpasswd ] && htpasswd -bc ${CONFDIR}/htpasswd openapp ${PASSWORD} > /dev/null
 
 chmod 640 ${CONFDIR}/*
 chown root:www-data ${CONFDIR}/*
