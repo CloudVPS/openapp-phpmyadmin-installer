@@ -27,7 +27,7 @@ fatal() {
 }
 
 download_phpmyadmin() {
-	MIRROR=http://test.tuxis.net/test/
+	MIRROR=http://download.openpanel.com/openapp-files/mysql
 
 	wget -q -O ${TMPDIR}/phpmyadmin-$$.tar.gz ${MIRROR}/phpmyadmin-newest.tar.gz
 
